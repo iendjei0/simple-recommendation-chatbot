@@ -1,5 +1,5 @@
-from model import ChatModel
-from view import ChatView
+from src.model import ChatModel
+from src.view import ChatView
 
 class ChatController():
     def __init__(self):

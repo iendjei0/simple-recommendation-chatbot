@@ -9,7 +9,7 @@ Y_PADDING = 10
 CORNER_RADIUS = 15
 
 class ChatView(ctk.CTk):
-    def __init__(self):
+    def __init__(self, controller):
         super().__init__() 
         FONT = ctk.CTkFont(family="Arial", size=14)
 
@@ -28,10 +28,8 @@ class ChatView(ctk.CTk):
 
         self.user_box = ctk.CTkTextbox(self.user_part, corner_radius=CORNER_RADIUS, font=FONT)
         self.user_box.grid(column=0, row=0, sticky="ew")
-        self.send_button = ctk.CTkButton(self.user_part, text="Send", corner_radius=CORNER_RADIUS, font=FONT)
+        self.send_button = ctk.CTkButton(self.user_part, text="Send", corner_radius=CORNER_RADIUS, font=FONT, command=controller.button_press)
         self.send_button.grid(column=1, row=0, sticky="", padx=20)
 
-
-
-    def show_text(self, text: str) -> None:
-        print(text)
+    def get_user_text(self) -> str:
+        return self.user_box.get("1.0", "end-1c")

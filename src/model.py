@@ -2,7 +2,7 @@ from typing import Callable
 
 class ChatModel:
     def __init__(self):
-        self._response: Callable[[str], str] = lambda prompt: "Found 7" if '7' in prompt else "Not found"
+        pass
     
-    def get_response(self, prompt: str) -> str:
-        return self._response(prompt)
+    def make_it_louder(self, text: str) -> str:
+        return text.upper()+" !!!!!"

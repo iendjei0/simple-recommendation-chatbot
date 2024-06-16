@@ -1,4 +1,4 @@
-from controller import ChatController
+from src.controller import ChatController
 
 def main():
     ChatController().run()

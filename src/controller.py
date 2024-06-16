@@ -1,5 +1,5 @@
-from model import ChatModel
-from view import ChatView
+from src.model import ChatModel
+from src.view import ChatView
 
 class ChatController():
     def __init__(self):
@@ -11,5 +11,7 @@ class ChatController():
 
     def button_press(self) -> None:
         prompt = self._view.get_user_text()
-        result = self._model.make_it_louder(prompt)
-        print(result)
+        result = self._model.get_response(prompt)
+        self._view.add_chat_text(f"User: {prompt}\n{self._model.name}: {result}\n")
+        self._view.set_user_text("")
+        self._view.scroll_chat_down()

@@ -78,9 +78,9 @@ def export_data(data):
         for recipe in data:
             writer.writerow(recipe.to_row())
 
-def import_data():
+def import_data(path):
     result = []
-    with open('recipes.csv', 'r', encoding='utf-8') as file:
+    with open(path, 'r', encoding='utf-8') as file:
         reader = csv.reader(file)
         next(reader)
         for row in reader:
@@ -103,7 +103,7 @@ if __name__ == '__main__':
         data = get_data()
         export_data(data)
     elif len(sys.argv) > 1 and sys.argv[1] == 'show':
-        data = import_data()
+        data = import_data("recipes.csv")
         for recipe in data:
             print(recipe)
     else:

@@ -12,6 +12,6 @@ class ChatController():
     def button_press(self) -> None:
         prompt = self._view.get_user_text()
         result = self._model.get_response(prompt)
-        self._view.add_chat_text(f"User: {prompt}\n{self._model.name}: {result}\n")
+        self._view.add_chat_text(f"{self._view.username}: {prompt}\n{self._view.botname}: {result}\n")
         self._view.set_user_text("")
         self._view.scroll_chat_down()

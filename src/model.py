@@ -166,7 +166,7 @@ class ChatModel(ChatBot):
             print(self.COOKBOOK_MENTIONED)
             if conversation_lead_found(prompt, "different_recipe"):
                 result = self.next_recipe(prompt)
-            else:
+            elif self.COOKBOOK_MENTIONED:
                 return "Would you like me to save this recipe to your cookbook?"
         
         if self.CONVERSATION_PHASE == 'first_recipe':

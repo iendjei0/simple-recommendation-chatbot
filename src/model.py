@@ -126,6 +126,7 @@ class ChatModel(ChatBot):
                 file.write(recipe.__str__().lstrip("===================================="))
                 return f"Recipe: {recipe.name} saved to your cookbook."
         
+    # TODO: eat italian > thanks
     def get_response(self, prompt: str) -> str:
         prompt = prompt.lower()
         result = None

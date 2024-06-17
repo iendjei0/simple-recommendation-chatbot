@@ -13,6 +13,9 @@ class ChatView(ctk.CTk):
         super().__init__() 
         FONT = ctk.CTkFont(family="Arial", size=18)
 
+        self.username = "👤 User"
+        self.botname = "⚙️<Bot>⚙️"
+
         self.title("MyChat")
         self.geometry(f"{WINDDOW_WIDTH}x{WINDDOW_HEIGHT}")
         self.columnconfigure(0, weight=1)
@@ -20,13 +23,13 @@ class ChatView(ctk.CTk):
 
         self.chat_box = ctk.CTkTextbox(self, corner_radius=CORNER_RADIUS, font=FONT)
         self.chat_box.grid(column=0, row=0, padx=X_PADDING, pady=Y_PADDING, sticky="news", columnspan=2)
-
+        self.chat_box.configure(state="disabled")
 
         self.user_part = ctk.CTkFrame(self, corner_radius=CORNER_RADIUS)
         self.user_part.grid(column=0, row=1, padx=X_PADDING, pady=Y_PADDING, sticky="ew")
         self.user_part.columnconfigure(0, weight=1)
 
-        self.user_box = ctk.CTkTextbox(self.user_part, corner_radius=CORNER_RADIUS, font=FONT)
+        self.user_box = ctk.CTkTextbox(self.user_part, corner_radius=CORNER_RADIUS, font=FONT, height=80)
         self.user_box.grid(column=0, row=0, sticky="ew")
         self.user_box.bind("<Return>", lambda event: (controller.button_press(), "break")[1])
         self.send_button = ctk.CTkButton(self.user_part, text="Send", corner_radius=CORNER_RADIUS, font=FONT, command=controller.button_press)
@@ -43,11 +46,15 @@ class ChatView(ctk.CTk):
         return self.chat_box.get("1.0", "end-1c")
 
     def set_chat_text(self, text: str) -> None:
+        self.chat_box.configure(state="normal")
         self.chat_box.delete("1.0", "end")
         self.chat_box.insert("1.0", text)
+        self.chat_box.configure(state="disabled")
     
     def add_chat_text(self, text: str) -> None:
+        self.chat_box.configure(state="normal")
         self.chat_box.insert("end", text)
+        self.chat_box.configure(state="disabled")
 
     def scroll_chat_down(self) -> None:
         self.chat_box.see("end")

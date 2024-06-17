@@ -1,4 +1,4 @@
-from recipe_data.scraper import Recipe, import_data
+from src.recipe_data.scraper import Recipe, import_data
 from chatterbot import ChatBot
 from chatterbot.trainers import ChatterBotCorpusTrainer
 from chatterbot.storage import SQLStorageAdapter
@@ -41,7 +41,7 @@ def list_similarity(list1: list, list2: list) -> float:
             count += 1
     return count / len(list1*3+list2)
 
-RECIPE_DATA = import_data("recipe_data/recipes.csv")
+RECIPE_DATA = import_data("src/recipe_data/recipes.csv")
 UNIQUE_KEYWORDS = get_unique_db_keywords()
 
 CONVERSATION_LEADS = {

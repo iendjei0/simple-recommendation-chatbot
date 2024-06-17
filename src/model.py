@@ -3,6 +3,7 @@ from chatterbot import ChatBot
 from chatterbot.trainers import ChatterBotCorpusTrainer
 from chatterbot.storage import SQLStorageAdapter
 from difflib import SequenceMatcher
+import re
 
 # Maybe swap with semantic similarity
 def string_similarity(str1: str, str2: str) -> float:
@@ -10,7 +11,8 @@ def string_similarity(str1: str, str2: str) -> float:
 
 def get_recipe_keywords(recipe: Recipe) -> list:
     result = f"{recipe.name} {recipe.category} {recipe.area} {' '.join(recipe.tags + recipe.ingredients)}"
-    return [r.lstrip("(").rstrip(")") for r in result.lower().split()]
+    result = re.sub(r'[^a-zA-Z0-9\s-]', '', result)
+    return [r for r in result.lower().split()]
 
 def get_unique_db_keywords() -> list:
     result = []
@@ -44,9 +46,11 @@ def list_similarity(list1: list, list2: list) -> float:
 RECIPE_DATA = import_data("src/recipe_data/recipes.csv")
 UNIQUE_KEYWORDS = get_unique_db_keywords()
 
+# TODO: italian. alphanumeric shit
+
 CONVERSATION_LEADS = {
     "find_recipe": ["find", "recipe", "hungry", "want", "make", "food", "meal", "dish", "eat", "craving", "dinner", "lunch", "breakfast", "snack", "dessert"],
-    "different_recipe": ["next", "another", "different", "new", "more", "else", "alternative", "other", "change", "switch"],
+    "different_recipe": ["next", "another", "different", "new", "more", "else", "alternative", "other", "change", "switch", "alternatives"],
     "yes": ["yes", "sure", "okay", "fine", "good", "great", "awesome", "cool", "nice", "alright", "yep", "yup", "yea", "yeah", "correct", "right", "affirmative", "positive", "true", "accurate", "indeed", "absolutely", "definitely", "certainly", "of course", "obviously", "clearly", "undoubtedly", "surely", "truly"],
     "no": ["no", "nah", "nope", "negative", "wrong", "incorrect", "false", "untrue"],
     "thanks": ["thanks", "thank", "thankyou", "thank you", "appreciate", "grateful", "gratitude", "blessed", "bless", "blessing", "blessings", "blessed", "blessed"],
@@ -99,11 +103,6 @@ class ChatModel(ChatBot):
         scored_recipes.sort(key=lambda x: x[1], reverse=True)
         self.current_recipes = [x[0] for x in scored_recipes]
 
-        print("a")
-        print([d.name for d in self.current_recipes])
-        print("b")
-        print(self.current_keywords)
-
         if self.current_recipes:
             return self.current_recipes[0]
         else:
@@ -130,7 +129,6 @@ class ChatModel(ChatBot):
     def get_response(self, prompt: str) -> str:
         prompt = prompt.lower()
         result = None
-        print(prompt, self.CONVERSATION_PHASE, self.COOKBOOK_MENTIONED)
 
         if self.CONVERSATION_PHASE == 'casual':
             if conversation_lead_found(prompt, "find_recipe"):
@@ -163,7 +161,6 @@ class ChatModel(ChatBot):
 
         if self.CONVERSATION_PHASE == 'next_recipe':
             self.set_cookbook_mention(prompt)
-            print(self.COOKBOOK_MENTIONED)
             if conversation_lead_found(prompt, "different_recipe"):
                 result = self.next_recipe(prompt)
             elif self.COOKBOOK_MENTIONED:
@@ -179,11 +176,12 @@ class ChatModel(ChatBot):
             self.reset_recipe_search()
             return "I can't find anything in the database. Can I help you with anything else?"
 
-        print(self.COOKBOOK_MENTIONED)
         if self.COOKBOOK_MENTIONED:
             result = result.__str__() + "\nWould you like me to save this recipe to your cookbook?"
         
         if isinstance(result, Recipe):
             result = "I found a recipe for you!\n" + result.__str__()
+        elif result.startswith("==="):
+            result = "I found a recipe for you!\n" + result
 
         return result

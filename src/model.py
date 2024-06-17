@@ -114,9 +114,17 @@ class ChatModel(ChatBot):
         self.current_recipes = self.current_recipes[1:]
         return self.find_recipe(prompt)
     
-    # TODO: Implement saving recipes to a cookbook
+    def is_recipe_in_cookbook(self, recipe: Recipe) -> bool:
+        with open("cookbook.txt", "r", encoding='cp1252') as file:
+            return recipe.__str__().strip("====================================") in file.read().split("====================================")
+
     def save_recipe(self, recipe: Recipe) -> None:
-        print(f"SAVE FEATURE NOT IMPLEMENTED, ONLY PRINTING")
+        with open("cookbook.txt", "a", encoding='utf-8') as file:
+            if self.is_recipe_in_cookbook(recipe):
+                return "This recipe is already in your cookbook."
+            else:
+                file.write(recipe.__str__().lstrip("===================================="))
+                return f"Recipe: {recipe.name} saved to your cookbook."
         
     # TODO: eat > italian > cookbook > yes ||| Feature
     # TODO: eat italian > next cookbook > yes ||| Bug
@@ -132,7 +140,7 @@ class ChatModel(ChatBot):
                 result = self.find_recipe(prompt)
             else:
                 return self.get_casual_response(prompt)
-            
+
         if self.CONVERSATION_PHASE == 'mention_recipe':
             self.COOKBOOK_MENTIONED = conversation_lead_found(prompt, "cookbook")
             self.CONVERSATION_PHASE = 'first_recipe'
@@ -141,16 +149,16 @@ class ChatModel(ChatBot):
             
         if self.CONVERSATION_PHASE == 'first_recipe':
             result = self.find_recipe(prompt) #self changed
-            
+
         if self.COOKBOOK_MENTIONED and self.CONVERSATION_PHASE != 'first_recipe':
             if conversation_lead_found(prompt, "yes") or conversation_lead_found(prompt, "no"):
                 self.CONVERSATION_PHASE = 'casual'
                 self.COOKBOOK_MENTIONED = False
+                result = self.current_recipes[0]
                 self.reset_recipe_search()
 
             if conversation_lead_found(prompt, "yes"):
-                self.save_recipe(result)
-                return f"Saved recipe: {result.name} to your cookbook." # THIS IS NONETYPE SOMETIMES
+                return self.save_recipe(result)
             elif conversation_lead_found(prompt, "no"):
                 return "Operation cancelled."
 

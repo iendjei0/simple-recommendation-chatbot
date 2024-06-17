@@ -126,8 +126,6 @@ class ChatModel(ChatBot):
                 file.write(recipe.__str__().lstrip("===================================="))
                 return f"Recipe: {recipe.name} saved to your cookbook."
         
-    # TODO: eat > italian > cookbook > yes ||| Feature
-    # TODO: eat italian > next cookbook > yes ||| Bug
     def get_response(self, prompt: str) -> str:
         prompt = prompt.lower()
         result = None
@@ -167,6 +165,8 @@ class ChatModel(ChatBot):
             print(self.COOKBOOK_MENTIONED)
             if conversation_lead_found(prompt, "different_recipe"):
                 result = self.next_recipe(prompt)
+            else:
+                return "Would you like me to save this recipe to your cookbook?"
         
         if self.CONVERSATION_PHASE == 'first_recipe':
             self.set_cookbook_mention(prompt)
